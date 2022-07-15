@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:my_app/models/auth_context.dart';
 import 'package:provider/provider.dart';
 import 'models/auth_context.dart';
+import 'widgets/case_widget.dart';
+import 'widgets/current_user.dart';
+import 'widgets/user/user_list_widget.dart';
 
 void main() {
   runApp(
@@ -42,18 +45,23 @@ class MyBody extends StatelessWidget {
           Consumer<AuthContext>(
             builder: (context, authContext, child) {
               final user = authContext.getCurrentUser();
-              return Row(
+              return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                      'Authenticated: ${user.authenticated}, Name: ${user.user?.fullName}'),
+                  Text('Authenticated: ${user.authenticated}'),
                   CaseWidget(
-                      trueWidget: TextButton(
-                          child: const Text('Logout'),
-                          onPressed: () {
-                            authContext.logout();
-                          }),
-                      falseWidget: TextButton(
+                      trueChild: Column(
+                        children: [
+                          const CurrentUserWidget(),
+                          const UserListWidget(),
+                          TextButton(
+                              child: const Text('Logout'),
+                              onPressed: () {
+                                authContext.logout();
+                              })
+                        ],
+                      ),
+                      falseChild: TextButton(
                         child: const Text('Login'),
                         onPressed: () {
                           authContext.login("oscar@nebulr.group", "helloworld");
@@ -67,23 +75,5 @@ class MyBody extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class CaseWidget extends StatelessWidget {
-  final Widget trueWidget;
-  final Widget falseWidget;
-  final bool expression;
-
-  const CaseWidget(
-      {Key? key,
-      required this.trueWidget,
-      required this.falseWidget,
-      required this.expression})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return expression ? trueWidget : falseWidget;
   }
 }

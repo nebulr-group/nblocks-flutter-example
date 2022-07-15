@@ -12,13 +12,11 @@ class AuthHttpClient {
 class AuthInterceptor implements InterceptorContract {
   @override
   Future<RequestData> interceptRequest({required RequestData data}) async {
-    final authToken = await AuthService.getAuthToken();
-    final mfaToken = await AuthService.getMfaToken();
+    final authToken = await AuthService.getAuthTokenHeader();
     final tenantUserId = await AuthService.getTenantUserId();
 
     if (authToken != "") {
-      data.headers.putIfAbsent("x-auth-token",
-          () => mfaToken != "" ? "${authToken}_$mfaToken" : authToken);
+      data.headers.putIfAbsent("x-auth-token", () => authToken);
     }
 
     if (tenantUserId != "") {

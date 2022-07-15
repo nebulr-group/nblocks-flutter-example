@@ -68,9 +68,12 @@ The data must be in `LangOverrideParam[]` format where:
 ```
 # Conceps and tools used
 ## Global state management and Event handling
-- `provider` 
+- `provider/consumers` from *provider* package
+- `shared_preferences` package
 
 ## Networking and HTTP
+- `http` & `http_interceptor` packages
+- `graphql_flutter` & `flutter_hooks` & `graphql_codegen` (Not installed yet)
 
 ## I18n
 ## Branding
@@ -89,3 +92,20 @@ Make sure you have Xcode installed and the license accepted.
 ### Running it
 * On iOS `open -a Simulator && flutter run`
 * On Web `flutter run`
+
+### Open issues
+Seems `graphql_flutter` is not null-safe...
+```
+: Warning: Operand of null-aware operation '!' has type 'WidgetsBinding' which excludes null.
+../…/widgets/cache_provider.dart:27
+- 'WidgetsBinding' is from 'package:flutter/src/widgets/binding.dart' ('../../../../libs/flutter/packages/flutter/lib/src/widgets/binding.dart').
+package:flutter/…/widgets/binding.dart:1
+    WidgetsBinding.instance!.addObserver(this);
+                   ^
+
+: Warning: Operand of null-aware operation '!' has type 'WidgetsBinding' which excludes null.
+../…/widgets/cache_provider.dart:45
+- 'WidgetsBinding' is from 'package:flutter/src/widgets/binding.dart' ('../../../../libs/flutter/packages/flutter/lib/src/widgets/binding.dart').
+package:flutter/…/widgets/binding.dart:1
+    WidgetsBinding.instance!.removeObserver(this);
+```

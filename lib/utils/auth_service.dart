@@ -115,6 +115,18 @@ class AuthService {
     return prefs.getString(_MFA_TOKEN_KEY) ?? "";
   }
 
+  // Util that concatinates authToken + mfaToken. Usefull for DRY approach between http client and graphql client
+  static Future<String> getAuthTokenHeader() async {
+    final authToken = await AuthService.getAuthToken();
+    final mfaToken = await AuthService.getMfaToken();
+
+    if (authToken != "") {
+      return mfaToken != "" ? "${authToken}_$mfaToken" : authToken;
+    } else {
+      return "";
+    }
+  }
+
   static Future<void> setTenantUserId(String id) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_TENANT_USER_ID_KEY, id);
