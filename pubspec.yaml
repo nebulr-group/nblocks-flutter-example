@@ -40,8 +40,13 @@ dependencies:
   shared_preferences: ^2.0.15
   flutter_hooks: ^0.18.5+1
   graphql_flutter: ^5.1.0
+  graphql_codegen: ^0.9.0
+  json_annotation: ^4.4.0
 
 dev_dependencies:
+  build_runner: ^2.0.0
+  json_serializable: ^6.0.0
+  
   flutter_test:
     sdk: flutter
 

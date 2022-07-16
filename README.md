@@ -1,7 +1,7 @@
 # nblocks-flutter
 This plugin supercharges your Flutter app with Nblocks powers in a true plug-n-play manner.
 
-Developement instructions further down.
+**Developement instructions further down.**
 
 # Built in Functionality
 * UI components for
@@ -73,13 +73,19 @@ The data must be in `LangOverrideParam[]` format where:
 
 ## Networking and HTTP
 - `http` & `http_interceptor` packages
-- `graphql_flutter` & `flutter_hooks` & `graphql_codegen` (Not installed yet)
+- `graphql_flutter` & `flutter_hooks` & `graphql_codegen`
+- `graphql_codegen` required us to add *json_annotation* and dev libraries: *build_runner* & *json_serializable*.
 
 ## I18n
 ## Branding
 
 
-# Development environment
+# Development instructions / environment
+
+## State of development:
+This project is currently a standalone hello world app that should be converted into a plugin. Currently the project has a skeleton structure with State management and auth intercepted http and graphql client. The functionality is show cased using different simple widgets.
+
+
 This project cannot be put inside a docker container. It needs access to IOS / Android simulator and should therefore be run on your host machine.
 
 Below steps was done on MacOS but should work similar on any other platform.
@@ -93,8 +99,17 @@ Make sure you have Xcode installed and the license accepted.
 * On iOS `open -a Simulator && flutter run`
 * On Web `flutter run`
 
-### Open issues
-Seems `graphql_flutter` is not null-safe...
+## Important notes
+- This project uses `graphql-codegen`.
+   - Under the hood, this uses `build_runner` and every graphql file gets a dart file generated next to it.
+   - Everytime you add or change a definition, rerun `flutter pub run build_runner build`
+   - *build_runner* needs to be configured to automatically generate graphql bindings and hooks. This is defined in `build.yaml`.
+   - It's unclear if `graphql-codegen` invalidates the need for `flutter_hooks` library or if this can be removed.
+
+## Open issues
+### graphql-codegen and non-required fields on input classes
+It seems auto generated Input classes like `Input$UserInput` sends `null` values on optional fields back to graphql api. This has implications like setting a user role to null if it's not declared. Fix this!
+### Seems `graphql_flutter` is not null-safe...
 ```
 : Warning: Operand of null-aware operation '!' has type 'WidgetsBinding' which excludes null.
 ../…/widgets/cache_provider.dart:27

@@ -1,8 +1,10 @@
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:my_app/schema.graphql.dart';
+import 'package:my_app/widgets/user/graphql/updateUser.mutation.graphql.dart';
 import 'package:provider/provider.dart';
-
+import './graphql/listUsers.query.graphql.dart';
 import '../../models/auth_context.dart';
 
 class UserListWidget extends StatelessWidget {
@@ -17,9 +19,22 @@ class UserListWidget extends StatelessWidget {
           ValueNotifier(authContext.getGraphqlClient());
       return GraphQLProvider(
         client: client,
-        child: const UserListWidgetBody(),
+        child: const StackWidget(),
       );
     });
+  }
+}
+
+class StackWidget extends StatelessWidget {
+  const StackWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [UserListWidgetBody(), UserEditWidgetBody()]);
   }
 }
 
@@ -30,29 +45,8 @@ class UserListWidgetBody extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    String readRepositories = """
-  query ListUsers{
-  listUsers{       
-    id
-    fullName
-    email
-    username
-    createdAt
-    onboarded
-    enabled
-    role
-    teams
-  }
-}
-""";
-
-    final readRespositoriesResult = useQuery(
-      QueryOptions(
-        document:
-            gql(readRepositories), // this is the query string you just created
-      ),
-    );
-    final result = readRespositoriesResult.result;
+    final query = useQuery$ListUsers();
+    final result = query.result;
 
     if (result.hasException) {
       return Text(result.exception.toString());
@@ -62,12 +56,34 @@ class UserListWidgetBody extends HookWidget {
       return const Text('Loading');
     }
 
-    List? users = result.data?['listUsers'];
+    final users = Query$ListUsers.fromJson(result.data!).listUsers;
 
-    if (users == null) {
+    if (users.isEmpty) {
       return const Text('No users');
     }
 
-    return Text("UserListWidget: ${users.map((e) => e['id']).join(", ")}");
+    return Text(
+        "UserListWidget: ${users.map((e) => "${e.username}(${e.enabled})").join(", ")}");
+  }
+}
+
+class UserEditWidgetBody extends HookWidget {
+  const UserEditWidgetBody({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final mutation = useMutation$UpdateUser();
+
+    return FloatingActionButton(
+      onPressed: () => mutation.runMutation(Variables$Mutation$UpdateUser(
+
+          /// See Open issues and graphql-codegen and non-required fields on input classes in Readme
+          user: Input$UserInput(
+              id: "62bf19da4a787100488eda08", enabled: false, role: "ADMIN"))),
+      tooltip: 'Star',
+      child: const Text("Test update user"),
+    );
   }
 }
